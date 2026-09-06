@@ -22,5 +22,16 @@ export default function ScoreboardPage() {
     )
   }
 
-  return <ScoreboardLayout game={game} />
+  return (
+    <div className="relative">
+      {game.status === 'finished' && (
+        <div className="absolute inset-0 z-10 flex items-start justify-center pt-8">
+          <span className="rounded bg-background/80 px-6 py-2 text-2xl font-bold text-foreground backdrop-blur-sm">
+            JOGO FINALIZADO
+          </span>
+        </div>
+      )}
+      <ScoreboardLayout game={game} />
+    </div>
+  )
 }
