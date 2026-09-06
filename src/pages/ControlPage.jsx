@@ -1,8 +1,9 @@
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, QrCode } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import ClockControls from '../components/control/ClockControls'
 import ControlClock from '../components/control/ControlClock'
+import ControlQRModal from '../components/control/ControlQRModal'
 import FinishGameModal from '../components/control/FinishGameModal'
 import FoulControls from '../components/control/FoulControls'
 import PeriodControls from '../components/control/PeriodControls'
@@ -14,8 +15,10 @@ export default function ControlPage() {
   const { id } = useParams()
   const [searchParams] = useSearchParams()
   const [showFinishModal, setShowFinishModal] = useState(false)
+  const [showQRModal, setShowQRModal] = useState(false)
   const [finishing, setFinishing] = useState(false)
   const token = searchParams.get('token')
+  const controlUrl = typeof window !== 'undefined' ? window.location.href : ''
 
   const { game, loading, error, realtimeStatus } = useGame(id)
 
@@ -82,6 +85,14 @@ export default function ControlPage() {
             Placar público
             <ExternalLink size={14} />
           </Link>
+          <button
+            onClick={() => setShowQRModal(true)}
+            className="btn-ghost gap-1 text-xs"
+            aria-label="QR code para controle no celular"
+          >
+            QR Code
+            <QrCode size={14} />
+          </button>
         </div>
       </header>
 
@@ -140,6 +151,12 @@ export default function ControlPage() {
         onClose={() => setShowFinishModal(false)}
         onConfirm={handleFinishGame}
         loading={finishing}
+      />
+
+      <ControlQRModal
+        isOpen={showQRModal}
+        onClose={() => setShowQRModal(false)}
+        url={controlUrl}
       />
 
       {!token && (
