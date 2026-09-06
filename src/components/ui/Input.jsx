@@ -1,3 +1,6 @@
-export default function Input(props) {
-  return <input {...props} />
+/**
+ * @param {React.InputHTMLAttributes<HTMLInputElement>} props
+ */
+export default function Input({ className = '', ...props }) {
+  return <input className={`input ${className}`} {...props} />
 }
