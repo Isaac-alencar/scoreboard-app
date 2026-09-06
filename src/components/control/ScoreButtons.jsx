@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useToast } from '../../hooks/useToast'
 import { addGameEvent, updateGame } from '../../hooks/useGameActions'
 import Button from '../ui/Button'
 
@@ -17,6 +18,7 @@ export default function ScoreButtons({
   currentScore,
 }) {
   const [busy, setBusy] = useState(false)
+  const { addToast } = useToast()
   const scoreField = team === 'home' ? 'home_score' : 'away_score'
   const label = team === 'home' ? 'Casa' : 'Visitante'
   const disabled = !controlToken || busy
@@ -34,9 +36,8 @@ export default function ScoreButtons({
         payload: { previous_score: currentScore, new_score: newScore },
       })
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Erro ao atualizar placar:', err)
-      alert('Erro ao atualizar placar. Verifique o token de controle.')
+      addToast('Erro ao atualizar placar. Verifique o token de controle.')
     } finally {
       setBusy(false)
     }
@@ -51,7 +52,7 @@ export default function ScoreButtons({
             key={points}
             onClick={() => changeScore(points)}
             disabled={disabled}
-            className="text-lg"
+            className="min-h-14 text-lg"
           >
             +{points}
           </Button>
@@ -64,7 +65,7 @@ export default function ScoreButtons({
             variant="secondary"
             onClick={() => changeScore(-points)}
             disabled={disabled}
-            className="text-lg"
+            className="min-h-14 text-lg"
           >
             -{points}
           </Button>

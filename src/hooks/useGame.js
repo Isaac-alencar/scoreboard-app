@@ -12,22 +12,17 @@ import { supabase } from '../lib/supabase'
  */
 export function useGame(gameId) {
   const [game, setGame] = useState(null)
-  const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [realtimeStatus, setRealtimeStatus] = useState('connecting')
 
   useEffect(() => {
-    if (!gameId) {
-      setLoading(false)
-      return
-    }
+    if (!gameId) return
 
     let subscription
     let isCancelled = false
 
     async function fetchGame() {
       try {
-        setLoading(true)
         const { data, error: fetchError } = await supabase
           .from('games')
           .select('*')
@@ -45,10 +40,6 @@ export function useGame(gameId) {
       } catch (err) {
         if (!isCancelled) {
           setError(err)
-        }
-      } finally {
-        if (!isCancelled) {
-          setLoading(false)
         }
       }
     }
@@ -73,10 +64,6 @@ export function useGame(gameId) {
       )
       .subscribe((status) => {
         setRealtimeStatus(status)
-        if (status === 'CHANNEL_ERROR') {
-          // eslint-disable-next-line no-console
-          console.error(`Realtime error for game ${gameId}`)
-        }
       })
 
     return () => {
@@ -86,6 +73,8 @@ export function useGame(gameId) {
       }
     }
   }, [gameId])
+
+  const loading = game === null && error === null && !!gameId
 
   return { game, loading, error, realtimeStatus }
 }

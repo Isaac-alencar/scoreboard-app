@@ -1,5 +1,6 @@
 import { Pause, Play, RotateCcw } from 'lucide-react'
 import { useState } from 'react'
+import { useToast } from '../../hooks/useToast'
 import { addGameEvent, updateGame } from '../../hooks/useGameActions'
 import { remainingSeconds } from '../../lib/clock'
 import Button from '../ui/Button'
@@ -13,6 +14,7 @@ import Button from '../ui/Button'
  */
 export default function ClockControls({ gameId, controlToken, game }) {
   const [busy, setBusy] = useState(false)
+  const { addToast } = useToast()
   const disabled = !controlToken || busy
 
   async function startClock() {
@@ -25,9 +27,8 @@ export default function ClockControls({ gameId, controlToken, game }) {
       })
       await addGameEvent(gameId, { type: 'clock_start' })
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Erro ao iniciar cronômetro:', err)
-      alert('Erro ao iniciar cronômetro. Verifique o token de controle.')
+            console.error('Erro ao iniciar cronômetro:', err)
+      addToast('Erro ao iniciar cronômetro. Verifique o token de controle.')
     } finally {
       setBusy(false)
     }
@@ -48,9 +49,8 @@ export default function ClockControls({ gameId, controlToken, game }) {
       })
       await addGameEvent(gameId, { type: 'clock_stop' })
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Erro ao pausar cronômetro:', err)
-      alert('Erro ao pausar cronômetro. Verifique o token de controle.')
+      addToast('Erro ao pausar cronômetro. Verifique o token de controle.')
     } finally {
       setBusy(false)
     }
@@ -69,9 +69,8 @@ export default function ClockControls({ gameId, controlToken, game }) {
       })
       await addGameEvent(gameId, { type: 'clock_reset' })
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Erro ao zerar cronômetro:', err)
-      alert('Erro ao zerar cronômetro. Verifique o token de controle.')
+      addToast('Erro ao zerar cronômetro. Verifique o token de controle.')
     } finally {
       setBusy(false)
     }

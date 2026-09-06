@@ -8,6 +8,7 @@ import FinishGameModal from '../components/control/FinishGameModal'
 import FoulControls from '../components/control/FoulControls'
 import PeriodControls from '../components/control/PeriodControls'
 import ScoreButtons from '../components/control/ScoreButtons'
+import { useToast } from '../hooks/useToast'
 import { useGame } from '../hooks/useGame'
 import { finishGame } from '../hooks/useGameActions'
 
@@ -17,6 +18,7 @@ export default function ControlPage() {
   const [showFinishModal, setShowFinishModal] = useState(false)
   const [showQRModal, setShowQRModal] = useState(false)
   const [finishing, setFinishing] = useState(false)
+  const { addToast } = useToast()
   const token = searchParams.get('token')
   const controlUrl = typeof window !== 'undefined' ? window.location.href : ''
 
@@ -30,9 +32,8 @@ export default function ControlPage() {
       setShowFinishModal(false)
       window.location.href = '/history'
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Erro ao finalizar jogo:', err)
-      alert('Erro ao finalizar jogo. Verifique o token de controle.')
+      addToast('Erro ao finalizar jogo. Verifique o token de controle.')
     } finally {
       setFinishing(false)
     }

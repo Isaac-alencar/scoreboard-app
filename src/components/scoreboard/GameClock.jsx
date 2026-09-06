@@ -26,25 +26,21 @@ export default function GameClock({
   period,
   isOvertime = false,
 }) {
-  const [displaySeconds, setDisplaySeconds] = useState(seconds)
+  const [tick, setTick] = useState(0)
 
   useEffect(() => {
-    setDisplaySeconds(
-      remainingSeconds({
-        clockSeconds: seconds,
-        clockRunning: running,
-        clockUpdatedAt: updatedAt,
-      })
-    )
-
     if (!running) return
-
-    const interval = setInterval(() => {
-      setDisplaySeconds((prev) => Math.max(0, prev - 1))
-    }, 1000)
-
+    const interval = setInterval(() => setTick((t) => t + 1), 1000)
     return () => clearInterval(interval)
-  }, [seconds, running, updatedAt])
+  }, [running])
+
+  void tick
+
+  const displaySeconds = remainingSeconds({
+    clockSeconds: seconds,
+    clockRunning: running,
+    clockUpdatedAt: updatedAt,
+  })
 
   return (
     <div className="flex h-full w-full items-center justify-between bg-[#09090b] px-6 md:px-12">

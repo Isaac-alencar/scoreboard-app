@@ -9,25 +9,21 @@ import { remainingSeconds } from '../../lib/clock'
  * }} props
  */
 export default function ControlClock({ seconds, running, updatedAt }) {
-  const [displaySeconds, setDisplaySeconds] = useState(seconds)
+  const [tick, setTick] = useState(0)
 
   useEffect(() => {
-    setDisplaySeconds(
-      remainingSeconds({
-        clockSeconds: seconds,
-        clockRunning: running,
-        clockUpdatedAt: updatedAt,
-      })
-    )
-
     if (!running) return
-
-    const interval = setInterval(() => {
-      setDisplaySeconds((prev) => Math.max(0, prev - 1))
-    }, 1000)
-
+    const interval = setInterval(() => setTick((t) => t + 1), 1000)
     return () => clearInterval(interval)
-  }, [seconds, running, updatedAt])
+  }, [running])
+
+  void tick
+
+  const displaySeconds = remainingSeconds({
+    clockSeconds: seconds,
+    clockRunning: running,
+    clockUpdatedAt: updatedAt,
+  })
 
   const minutes = Math.floor(displaySeconds / 60)
   const secs = String(Math.floor(displaySeconds % 60)).padStart(2, '0')

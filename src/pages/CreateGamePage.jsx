@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useToast } from '../hooks/useToast'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import { createGame } from '../hooks/useGameActions'
 
 export default function CreateGamePage() {
   const navigate = useNavigate()
+  const { addToast } = useToast()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
   const [form, setForm] = useState({
     homeTeamName: 'Casa',
     awayTeamName: 'Visitante',
@@ -19,7 +20,6 @@ export default function CreateGamePage() {
   async function handleSubmit(event) {
     event.preventDefault()
     setLoading(true)
-    setError(null)
 
     try {
       const { id, controlToken } = await createGame({
@@ -32,7 +32,7 @@ export default function CreateGamePage() {
 
       navigate(`/scoreboard/${id}/control?token=${controlToken}`)
     } catch (err) {
-      setError(err)
+      addToast(`Erro ao criar jogo: ${err.message}`)
     } finally {
       setLoading(false)
     }
@@ -116,11 +116,6 @@ export default function CreateGamePage() {
           />
         </div>
 
-        {error && (
-          <p className="text-danger text-sm">
-            Erro ao criar jogo: {error.message}
-          </p>
-        )}
 
         <div className="mt-4 flex gap-3">
           <Button type="submit" className="flex-1" disabled={loading}>

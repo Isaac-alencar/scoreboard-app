@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
+import { useToast } from '../../hooks/useToast'
 import { addGameEvent, updateGame } from '../../hooks/useGameActions'
 import Button from '../ui/Button'
 
@@ -12,6 +13,7 @@ import Button from '../ui/Button'
  */
 export default function PeriodControls({ gameId, controlToken, game }) {
   const [busy, setBusy] = useState(false)
+  const { addToast } = useToast()
   const disabled = !controlToken || busy
   const maxPeriods = game.total_periods
 
@@ -31,9 +33,8 @@ export default function PeriodControls({ gameId, controlToken, game }) {
         payload: { direction: 'previous' },
       })
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Erro ao mudar período:', err)
-      alert('Erro ao mudar período. Verifique o token de controle.')
+      addToast('Erro ao mudar período. Verifique o token de controle.')
     } finally {
       setBusy(false)
     }
@@ -55,9 +56,8 @@ export default function PeriodControls({ gameId, controlToken, game }) {
         payload: { direction: 'next' },
       })
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Erro ao mudar período:', err)
-      alert('Erro ao mudar período. Verifique o token de controle.')
+      addToast('Erro ao mudar período. Verifique o token de controle.')
     } finally {
       setBusy(false)
     }
@@ -80,9 +80,8 @@ export default function PeriodControls({ gameId, controlToken, game }) {
         value: overtimePeriod,
       })
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Erro ao iniciar overtime:', err)
-      alert('Erro ao iniciar overtime. Verifique o token de controle.')
+      addToast('Erro ao iniciar overtime. Verifique o token de controle.')
     } finally {
       setBusy(false)
     }

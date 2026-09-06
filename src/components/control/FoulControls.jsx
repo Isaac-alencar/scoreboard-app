@@ -1,5 +1,6 @@
 import { Minus, Plus } from 'lucide-react'
 import { useState } from 'react'
+import { useToast } from '../../hooks/useToast'
 import { addGameEvent, updateGame } from '../../hooks/useGameActions'
 import Button from '../ui/Button'
 
@@ -18,6 +19,7 @@ export default function FoulControls({
   currentFouls,
 }) {
   const [busy, setBusy] = useState(false)
+  const { addToast } = useToast()
   const foulsField = team === 'home' ? 'home_fouls' : 'away_fouls'
   const label = team === 'home' ? 'Faltas Casa' : 'Faltas Visitante'
   const disabled = !controlToken || busy
@@ -35,9 +37,8 @@ export default function FoulControls({
         payload: { previous_fouls: currentFouls, new_fouls: newFouls },
       })
     } catch (err) {
-      // eslint-disable-next-line no-console
       console.error('Erro ao atualizar faltas:', err)
-      alert('Erro ao atualizar faltas. Verifique o token de controle.')
+      addToast('Erro ao atualizar faltas. Verifique o token de controle.')
     } finally {
       setBusy(false)
     }
@@ -51,9 +52,10 @@ export default function FoulControls({
           variant="ghost"
           onClick={() => changeFouls(-1)}
           disabled={disabled}
+          className="min-h-12 min-w-12"
           aria-label="Remover falta"
         >
-          <Minus size={18} />
+          <Minus size={20} />
         </Button>
         <span className="min-w-[1.5ch] text-center text-xl font-bold">
           {currentFouls}
@@ -62,9 +64,10 @@ export default function FoulControls({
           variant="ghost"
           onClick={() => changeFouls(1)}
           disabled={disabled}
+          className="min-h-12 min-w-12"
           aria-label="Adicionar falta"
         >
-          <Plus size={18} />
+          <Plus size={20} />
         </Button>
       </div>
     </div>
