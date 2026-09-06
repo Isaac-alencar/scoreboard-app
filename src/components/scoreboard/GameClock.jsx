@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { remainingSeconds } from '../../lib/clock'
 import PeriodIndicator from './PeriodIndicator'
 
 function formatClock(totalSeconds) {
@@ -28,14 +29,15 @@ export default function GameClock({
   const [displaySeconds, setDisplaySeconds] = useState(seconds)
 
   useEffect(() => {
-    if (!running) {
-      setDisplaySeconds(seconds)
-      return
-    }
+    setDisplaySeconds(
+      remainingSeconds({
+        clockSeconds: seconds,
+        clockRunning: running,
+        clockUpdatedAt: updatedAt,
+      })
+    )
 
-    const updated = updatedAt ? new Date(updatedAt).getTime() : Date.now()
-    const elapsed = (Date.now() - updated) / 1000
-    setDisplaySeconds(Math.max(0, seconds - elapsed))
+    if (!running) return
 
     const interval = setInterval(() => {
       setDisplaySeconds((prev) => Math.max(0, prev - 1))

@@ -1,14 +1,116 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useState } from 'react'
+import { addGameEvent, updateGame } from '../../hooks/useGameActions'
 import Button from '../ui/Button'
 
-export default function PeriodControls() {
+/**
+ * @param {{
+ *   gameId: string
+ *   controlToken: string | null
+ *   game: import('../../types/game').Game
+ * }} props
+ */
+export default function PeriodControls({ gameId, controlToken, game }) {
+  const [busy, setBusy] = useState(false)
+  const disabled = !controlToken || busy
+  const maxPeriods = game.total_periods
+
+  async function previousPeriod() {
+    if (!controlToken || busy || game.period <= 1) return
+    setBusy(true)
+    try {
+      const newPeriod = game.period - 1
+      const isNowOvertime = newPeriod > maxPeriods
+      await updateGame(gameId, controlToken, {
+        period: newPeriod,
+        is_overtime: isNowOvertime,
+      })
+      await addGameEvent(gameId, {
+        type: 'period_change',
+        value: newPeriod,
+        payload: { direction: 'previous' },
+      })
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Erro ao mudar período:', err)
+      alert('Erro ao mudar período. Verifique o token de controle.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function nextPeriod() {
+    if (!controlToken || busy) return
+    setBusy(true)
+    try {
+      const newPeriod = game.period + 1
+      const isNowOvertime = newPeriod > maxPeriods
+      await updateGame(gameId, controlToken, {
+        period: newPeriod,
+        is_overtime: isNowOvertime,
+      })
+      await addGameEvent(gameId, {
+        type: 'period_change',
+        value: newPeriod,
+        payload: { direction: 'next' },
+      })
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Erro ao mudar período:', err)
+      alert('Erro ao mudar período. Verifique o token de controle.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  async function startOvertime() {
+    if (!controlToken || busy || game.is_overtime || game.period <= maxPeriods)
+      return
+    setBusy(true)
+    try {
+      const overtimePeriod = maxPeriods + 1
+      await updateGame(gameId, controlToken, {
+        period: overtimePeriod,
+        is_overtime: true,
+        clock_seconds: game.overtime_duration_seconds,
+        clock_running: false,
+      })
+      await addGameEvent(gameId, {
+        type: 'overtime_start',
+        value: overtimePeriod,
+      })
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('Erro ao iniciar overtime:', err)
+      alert('Erro ao iniciar overtime. Verifique o token de controle.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <div className="flex items-center gap-2">
-      <Button variant="secondary" aria-label="Período anterior">
+      <Button
+        variant="secondary"
+        onClick={previousPeriod}
+        disabled={disabled || game.period <= 1}
+        aria-label="Período anterior"
+      >
         <ChevronLeft size={18} />
       </Button>
-      <Button variant="secondary">OT</Button>
-      <Button variant="secondary" aria-label="Próximo período">
+      <Button
+        variant="secondary"
+        onClick={startOvertime}
+        disabled={disabled || game.is_overtime || game.period <= maxPeriods}
+      >
+        OT
+      </Button>
+      <Button
+        variant="secondary"
+        onClick={nextPeriod}
+        disabled={disabled}
+        aria-label="Próximo período"
+      >
         <ChevronRight size={18} />
       </Button>
     </div>

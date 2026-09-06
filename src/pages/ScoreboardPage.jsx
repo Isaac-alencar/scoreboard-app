@@ -1,27 +1,26 @@
+import { useParams } from 'react-router-dom'
 import ScoreboardLayout from '../components/scoreboard/ScoreboardLayout'
-
-const mockGame = {
-  id: 'mock-id',
-  status: 'live',
-  home_team_name: 'Casa',
-  away_team_name: 'Visitante',
-  home_score: 0,
-  away_score: 0,
-  home_fouls: 0,
-  away_fouls: 0,
-  period: 1,
-  is_overtime: false,
-  clock_running: false,
-  clock_seconds: 600,
-  clock_updated_at: new Date().toISOString(),
-  period_duration_seconds: 600,
-  overtime_duration_seconds: 300,
-  total_periods: 4,
-  control_token: 'mock-token',
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString(),
-}
+import { useGame } from '../hooks/useGame'
 
 export default function ScoreboardPage() {
-  return <ScoreboardLayout game={mockGame} />
+  const { id } = useParams()
+  const { game, loading, error } = useGame(id)
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background text-foreground">
+        Carregando...
+      </div>
+    )
+  }
+
+  if (error || !game) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-background text-danger">
+        Jogo não encontrado.
+      </div>
+    )
+  }
+
+  return <ScoreboardLayout game={game} />
 }

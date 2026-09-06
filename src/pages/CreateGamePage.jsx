@@ -2,9 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
+import { createGame } from '../hooks/useGameActions'
 
 export default function CreateGamePage() {
   const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
   const [form, setForm] = useState({
     homeTeamName: 'Casa',
     awayTeamName: 'Visitante',
@@ -13,11 +16,26 @@ export default function CreateGamePage() {
     totalPeriods: 4,
   })
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault()
-    // TODO: criar jogo no Supabase na próxima fatia
-    const mockId = crypto.randomUUID()
-    navigate(`/scoreboard/${mockId}/control?token=mock-token`)
+    setLoading(true)
+    setError(null)
+
+    try {
+      const { id, controlToken } = await createGame({
+        homeTeamName: form.homeTeamName,
+        awayTeamName: form.awayTeamName,
+        periodDurationMinutes: Number(form.periodDuration),
+        overtimeDurationMinutes: Number(form.overtimeDuration),
+        totalPeriods: Number(form.totalPeriods),
+      })
+
+      navigate(`/scoreboard/${id}/control?token=${controlToken}`)
+    } catch (err) {
+      setError(err)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -97,14 +115,22 @@ export default function CreateGamePage() {
             }
           />
         </div>
+
+        {error && (
+          <p className="text-danger text-sm">
+            Erro ao criar jogo: {error.message}
+          </p>
+        )}
+
         <div className="mt-4 flex gap-3">
-          <Button type="submit" className="flex-1">
-            Criar jogo
+          <Button type="submit" className="flex-1" disabled={loading}>
+            {loading ? 'Criando...' : 'Criar jogo'}
           </Button>
           <Button
             type="button"
             variant="secondary"
             onClick={() => navigate('/')}
+            disabled={loading}
           >
             Cancelar
           </Button>
