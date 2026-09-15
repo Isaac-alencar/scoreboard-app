@@ -1,6 +1,7 @@
 import { ExternalLink, QrCode } from 'lucide-react'
 import { useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
+import ClockAdjust from '../components/control/ClockAdjust'
 import ClockControls from '../components/control/ClockControls'
 import ControlClock from '../components/control/ControlClock'
 import ControlQRModal from '../components/control/ControlQRModal'
@@ -119,6 +120,12 @@ export default function ControlPage() {
 
         <section className="flex flex-col justify-center gap-4">
           <ClockControls gameId={game.id} controlToken={token} game={game} />
+          <ClockAdjust
+            key={game.clock_seconds}
+            gameId={game.id}
+            controlToken={token}
+            game={game}
+          />
           <PeriodControls gameId={game.id} controlToken={token} game={game} />
           <button
             onClick={() => setShowFinishModal(true)}

@@ -29,3 +29,13 @@ export function formatClock(totalSeconds) {
   const ss = String(seconds).padStart(2, '0')
   return `${mm}:${ss}`
 }
+
+/**
+ * @param {string} text M:SS ou MM:SS
+ * @returns {number | null} total de segundos, ou null se inválido
+ */
+export function parseClock(text) {
+  const match = /^(\d{1,3}):([0-5]\d)$/.exec(text.trim())
+  if (!match) return null
+  return Number(match[1]) * 60 + Number(match[2])
+}
