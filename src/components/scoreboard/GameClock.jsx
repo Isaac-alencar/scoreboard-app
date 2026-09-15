@@ -43,11 +43,11 @@ export default function GameClock({
   })
 
   return (
-    <div className="flex h-full w-full items-center justify-between bg-[#09090b] px-6 md:px-12">
-      <div className="text-[clamp(2rem,5vw,4rem)] text-white">
+    <div className="relative flex h-full w-full items-center justify-center bg-[#09090b] px-6 md:px-12">
+      <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[clamp(2rem,5vw,4rem)] text-white md:left-12">
         <PeriodIndicator period={period} isOvertime={isOvertime} />
       </div>
-      <div className="text-[clamp(4rem,12vw,10rem)] leading-none text-white bowlby-one">
+      <div className="text-[clamp(6rem,18vw,15rem)] leading-none text-white bowlby-one">
         {formatClock(displaySeconds)}
       </div>
     </div>
