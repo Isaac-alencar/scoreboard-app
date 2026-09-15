@@ -1,14 +1,6 @@
-import { useEffect, useState } from 'react'
-import { remainingSeconds } from '../../lib/clock'
+import { useGameClock } from '../../hooks/useGameClock'
+import { formatClock } from '../../lib/clock'
 import PeriodIndicator from './PeriodIndicator'
-
-function formatClock(totalSeconds) {
-  const minutes = Math.floor(totalSeconds / 60)
-  const seconds = Math.floor(totalSeconds % 60)
-  const mm = String(minutes).padStart(2, '0')
-  const ss = String(seconds).padStart(2, '0')
-  return `${mm}:${ss}`
-}
 
 /**
  * @param {{
@@ -26,21 +18,7 @@ export default function GameClock({
   period,
   isOvertime = false,
 }) {
-  const [tick, setTick] = useState(0)
-
-  useEffect(() => {
-    if (!running) return
-    const interval = setInterval(() => setTick((t) => t + 1), 1000)
-    return () => clearInterval(interval)
-  }, [running])
-
-  void tick
-
-  const displaySeconds = remainingSeconds({
-    clockSeconds: seconds,
-    clockRunning: running,
-    clockUpdatedAt: updatedAt,
-  })
+  const displaySeconds = useGameClock({ seconds, running, updatedAt })
 
   return (
     <div className="relative flex h-full w-full items-center justify-center bg-[#09090b] px-6 md:px-12">

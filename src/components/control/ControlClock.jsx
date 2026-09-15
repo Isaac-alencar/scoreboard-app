@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { remainingSeconds } from '../../lib/clock'
+import { useGameClock } from '../../hooks/useGameClock'
+import { formatClock } from '../../lib/clock'
 
 /**
  * @param {{
@@ -9,28 +9,7 @@ import { remainingSeconds } from '../../lib/clock'
  * }} props
  */
 export default function ControlClock({ seconds, running, updatedAt }) {
-  const [tick, setTick] = useState(0)
+  const displaySeconds = useGameClock({ seconds, running, updatedAt })
 
-  useEffect(() => {
-    if (!running) return
-    const interval = setInterval(() => setTick((t) => t + 1), 1000)
-    return () => clearInterval(interval)
-  }, [running])
-
-  void tick
-
-  const displaySeconds = remainingSeconds({
-    clockSeconds: seconds,
-    clockRunning: running,
-    clockUpdatedAt: updatedAt,
-  })
-
-  const minutes = Math.floor(displaySeconds / 60)
-  const secs = String(Math.floor(displaySeconds % 60)).padStart(2, '0')
-
-  return (
-    <span className="tabular-nums">
-      {minutes}:{secs}
-    </span>
-  )
+  return <span className="tabular-nums">{formatClock(displaySeconds)}</span>
 }
